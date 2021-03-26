@@ -1,0 +1,84 @@
+const months = ["January", "February", "March", "April", "May", "June", 
+                "July", "August", "September", "October", "November", "December"];
+
+var numWrongGuesses = 10;
+var numCorrectGuesses = "";
+var selectedWord = "";
+var splitRandom = "";
+var userLetterInput = "";
+var allCorrectAnswers = [];
+
+function startGame() {
+    selectRandomWord(months);
+    setupGame();
+    playHangman(0);
+}
+
+function selectRandomWord(arr) {
+    // selects a random word and prints it
+    var random = Math.floor(Math.random() * arr.length);
+    selectedWord = arr[random];
+    console.log(selectedWord);
+}
+
+function setupGame() {
+    // converts word to all lower case and an array
+    splitRandom = selectedWord.toLowerCase().split("");
+    console.log(splitRandom);
+    // sets number of correct guesses to the length of the word
+    numCorrectGuesses = splitRandom.length;
+    console.log("Your word is " + splitRandom.length + " letters long!");
+}
+
+function playHangman(num) {
+    while(numCorrectGuesses > num || numWrongGuesses > num) {
+        // reads a letter from user
+        userLetterInput = readLine("Please enter a letter! Your guess: ");
+        // checks if letter is in the randomly selected word
+        var answer = splitRandom.includes(userLetterInput);
+        
+        //if letter is in word
+        if(answer == true) {
+            // will store all correrct guesses
+            allCorrectAnswers.push(userLetterInput);
+            //removes guess to avoid repitition of guesses
+            removeGuess(userLetterInput, splitRandom);
+            console.log("Good guess!");
+            numCorrectGuesses--;
+            console.log("You have " + numCorrectGuesses + " more letters to uncover!");
+            if(numCorrectGuesses == num) {
+                console.log("Congratulations! You Won!");
+                return;
+            }
+        // if letter is not in word
+        } else {
+            if(allCorrectAnswers.includes(userLetterInput)) {
+                console.log("You already guessed that letter. Try Again!");
+            } else {
+                console.log("Try Again!");
+                numWrongGuesses--;
+                console.log("You have " + numWrongGuesses + " guesses left!");
+                if(numWrongGuesses == num) {
+                    console.log("You ran out of guesses. Try Again!");
+                    return;
+                }
+            }
+        }
+        // will cancel to avoid infinite loop
+        if(userLetterInput == null) {
+            break;
+        }
+    }
+}
+
+// blocks user from reusing a guess
+function removeGuess(str, arr) {
+    // finds location of guess in array
+    var location = arr.indexOf(str);
+    if(location > -1) {
+        // removes str at location
+        arr.splice(location, 1);
+    }
+}
+
+startGame();
